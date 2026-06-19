@@ -1,0 +1,56 @@
+REDROB CANDIDATE SIEVE DETAILED FINDINGS
+========================================
+
+1. SIEVE IMPLEMENTATION DETAILS
+-------------------------------
+The sieve is implemented in a reusable module `scratch/sieve.py`. It exposes two primary functions:
+- `is_honeypot(candidate, current_time, yoe_threshold, dur_threshold, expert_zero_threshold)`:
+  Checks date-duration logic and expert zero-duration skills:
+  * Rule 1 (YoE Mismatch): Stated Years of Experience exceeds the calendar span of jobs (first job start to 2026-06-18) by > 0.5 years.
+  * Rule 2 (Job Duration Mismatch): Stated job duration in months exceeds the calendar span of that job (start date to end date, or to 2026-06-18 if current) by > 3 months.
+  * Rule 3 (Expert Zero-Duration Skills): Candidate has >= 1 skill with "expert" proficiency and 0 months of stated duration.
+- `is_disqualified(candidate)`:
+  Checks the disqualification logic:
+  * Check 1 (Bad Titles): Candidate's current title is in the set of irrelevant trap titles (BAD_TITLES).
+  * Check 2 (Consulting Only): Candidate's entire career history consists exclusively of IT consulting/services firms (CONSULTING_COMPANIES).
+
+2. FILTERED CANDIDATES METRICS
+------------------------------
+The sieve was tested on the full dataset of 100,000 candidates in `candidates.jsonl`:
+- Total Candidates Scanned: 100,000
+- Honeypots Identified: 65 (0.065% of candidate pool)
+- Disqualified Candidates: 52,475 (52.475% of candidate pool)
+- Total Unique Candidates Filtered: 52,512 (52.512% of candidate pool)
+- Candidates Passing the Sieve: 47,488 (47.488% of candidate pool)
+
+Detailed Breakdown of Triggered Rules:
+- YoE Mismatch (Honeypot): 25 candidates
+- Job Duration Mismatch (Honeypot): 19 candidates
+- Expert Zero-Duration Skills (Honeypot): 21 candidates
+- Bad Title (Disqualification): 45,702 candidates
+- Consulting-Only History (Disqualification): 9,745 candidates
+
+Overlap Analysis:
+- There are 28 candidates who are flagged as BOTH a Honeypot AND Disqualified (due to a bad title or consulting-only history).
+- There are 37 candidates who are flagged EXCLUSIVELY as a Honeypot.
+- The union of all filtered candidates is exactly 52,512.
+
+3. LIST OF FLAGENT HONEYPOT CANDIDATES (65 IDs)
+-----------------------------------------------
+The following 65 candidate IDs have subtly impossible profiles and are verified honeypots:
+CAND_0003430, CAND_0003582, CAND_0005291, CAND_0007353, CAND_0007413, 
+CAND_0008960, CAND_0010294, CAND_0010770, CAND_0013536, CAND_0016000, 
+CAND_0018515, CAND_0024752, CAND_0025579, CAND_0033131, CAND_0033817, 
+CAND_0033972, CAND_0035104, CAND_0036299, CAND_0036839, CAND_0037539, 
+CAND_0038431, CAND_0039754, CAND_0040075, CAND_0040853, CAND_0042245, 
+CAND_0042453, CAND_0043721, CAND_0046649, CAND_0046689, CAND_0048740, 
+CAND_0052478, CAND_0053734, CAND_0055685, CAND_0055792, CAND_0055992, 
+CAND_0056983, CAND_0057711, CAND_0060642, CAND_0061722, CAND_0063888, 
+CAND_0064077, CAND_0065096, CAND_0065710, CAND_0065787, CAND_0066405, 
+CAND_0070189, CAND_0070429, CAND_0071115, CAND_0072379, CAND_0073853, 
+CAND_0074119, CAND_0077239, CAND_0077250, CAND_0084182, CAND_0086808, 
+CAND_0090900, CAND_0091068, CAND_0091534, CAND_0093331, CAND_0093364, 
+CAND_0095140, CAND_0095317, CAND_0095480, CAND_0095619, CAND_0096150
+
+All flagged candidate IDs (including bad titles and consulting-only) have been written to the structured JSON file:
+`C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/scratch/flagged_candidates.json`

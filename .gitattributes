@@ -1,0 +1,12 @@
+* text=auto
+*.py text
+*.md text
+*.yaml text
+*.yml text
+*.json text
+*.csv text
+*.txt text
+
+# Ensure consistent line endings
+*.sh text eol=lf
+*.py text eol=lf

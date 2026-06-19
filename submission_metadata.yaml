@@ -1,0 +1,85 @@
+# Redrob Hackathon — Submission Metadata
+#
+# Filled in configuration for team submission verification.
+
+# ============================================================================
+# Team identity
+# ============================================================================
+team_name: "RedRob-Antigravity"  # Used in leaderboard and announcements
+
+primary_contact:
+  name: "Rushikesh"
+  email: "rushikesh@example.com"   # Used for all organizer communication
+  phone: "+91-9999999999"        # Used for top-50 / top-10 outreach
+
+team_members:
+  - name: "Rushikesh"
+    email: "rushikesh@example.com"
+    role: "ML Engineer"          # Optional, e.g. "Team Lead", "Backend", "Data"
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "https://github.com/Rushikesh/Hack2Skill-RedRob"
+# Required. Must be reachable. Private repos OK if you can grant organizer
+# access at Stage 3 (the email to add will be communicated then).
+
+sandbox_link: "https://huggingface.co/spaces/Rushikesh/redrob-candidate-discovery"
+# Required. A working hosted environment where the ranker can be run on a small
+# candidate sample. See Section 10.5 of submission_spec.md for acceptable
+# platforms.
+
+reproduce_command: "python rank.py --candidates ./Hackathon-Details/candidates.jsonl --out ./team_redrob.csv"
+# The single command that produces team_redrob.csv from candidates.jsonl.
+# Should run end-to-end within 5 minutes on CPU with 16GB RAM and no network.
+
+# ============================================================================
+# Compute environment
+# ============================================================================
+compute:
+  platform: "Windows Laptop"                    # Or: "AWS EC2 c5.4xlarge", "Local Linux box", etc.
+  cpu_cores: 8                                  # Number of CPU cores used
+  ram_gb: 16                                    # Available RAM in GB
+  python_version: "3.11.4"                      # python --version
+  os: "Windows 11"                              # Or "Ubuntu 22.04 LTS", etc.
+  uses_gpu_for_inference: false                 # Must be false — see compute constraints
+  has_network_during_ranking: false             # Must be false — no API calls during ranking
+  pre_computation_required: false               # true if you pre-compute embeddings or train models offline
+  pre_computation_time_minutes: 0               # Approximate, if applicable
+
+# ============================================================================
+# AI tools declaration
+# ============================================================================
+# Transparency only — declared use is NOT penalized. Be honest. Stage 5 interview
+# may verify these declarations against your code; declarations that contradict
+# your code or your interview are flagged.
+ai_tools_used:
+  - "Claude"        # e.g. for architecture discussion, code review
+  - "Gemini"        # e.g. for Refactoring and pipeline design
+
+ai_usage_summary: |
+  Used Claude and Gemini for design ideation, code refactoring, and debugging.
+  All data processing was performed locally and offline on CPU-only. No candidate
+  data was sent to external LLM APIs.
+
+# ============================================================================
+# Approach summary (optional but recommended)
+# ============================================================================
+methodology_summary: |
+  Hybrid Lexical-Semantic Candidate Ranking Pipeline with a 3-pass streaming
+  architecture. It features a tech-aware tokenizer that extracts compound key phrases
+  (e.g. 'machine learning', 'sentence transformers') and normalizes skill names for
+  soft matching against semantic concept clusters. Employs defensive type safety,
+  word-boundary company/title matching, and moderated availability multipliers to
+  rank candidates while excluding honeypot profiles without losing recall. Memory
+  footprint is O(1) (~15MB), and total execution time is under 45 seconds on a single CPU.
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true        # I have read submission_spec.md in full
+  code_is_original_work: true       # My code is my team's original work (using AI as a tool is fine)
+  no_collusion: true                # I have not coordinated my submission with other teams
+  honeypot_check_done: true         # OPTIONAL — set true if you explicitly checked for honeypots in your ranking
+  reproduction_tested: true         # I have tested that my reproduce_command runs end-to-end
