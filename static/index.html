@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redrob Candidate Discovery & Verification Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Main Header -->
+        <header class="app-header">
+            <div class="header-logo">
+                <span class="logo-icon">🎯</span>
+                <div class="logo-text">
+                    <h1>Redrob Discovery Hub</h1>
+                    <p class="subtitle">Intelligent Candidate Discovery & Verification Sandbox</p>
+                </div>
+            </div>
+            <div class="header-stats" id="telemetry-stats">
+                <span class="stat-badge loading-pulse">Connecting to backend...</span>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Sidebar Panel: Search, Filters and Candidate List -->
+            <section class="sidebar-panel">
+                <div class="search-section card">
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="Search name, company, or skills..." autocomplete="off">
+                        <button class="search-btn" id="search-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </button>
+                    </div>
+                    
+                    <button class="filter-toggle-btn" id="filter-toggle-btn">
+                        <span>Advanced Filters</span>
+                        <svg class="toggle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    
+                    <div class="advanced-filters" id="advanced-filters-panel">
+                        <div class="filter-group">
+                            <label for="filter-title">Job Title</label>
+                            <input type="text" id="filter-title" placeholder="e.g. ML Engineer">
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-loc">Location</label>
+                            <input type="text" id="filter-loc" placeholder="e.g. Pune, Noida">
+                        </div>
+                        <div class="filter-group">
+                            <label>Years of Experience (<span id="yoe-val">0 - 20</span>)</label>
+                            <div class="range-sliders">
+                                <input type="range" id="filter-yoe-min" min="0" max="20" step="0.5" value="0">
+                                <input type="range" id="filter-yoe-max" min="0" max="20" step="0.5" value="20">
+                            </div>
+                        </div>
+                        <button class="reset-btn" id="reset-filters-btn">Reset Filters</button>
+                    </div>
+                </div>
+
+                <div class="list-section card">
+                    <div class="list-header">
+                        <h2>Candidate Directory</h2>
+                        <span class="count-badge" id="results-count">0 found</span>
+                    </div>
+                    
+                    <div class="candidate-list-scroll" id="candidate-list-container">
+                        <!-- Loaded dynamically -->
+                        <div class="list-loader">
+                            <div class="spinner"></div>
+                            <p>Loading candidates...</p>
+                        </div>
+                    </div>
+
+                    <div class="pagination-footer">
+                        <button class="pager-btn" id="pager-prev" disabled>&larr; Prev</button>
+                        <span class="pager-info" id="pager-info">Page 1 of 1</span>
+                        <button class="pager-btn" id="pager-next" disabled>Next &rarr;</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Showcase: Profiler -->
+            <section class="showcase-panel">
+                <div id="showcase-content-container">
+                    <!-- Welcome View -->
+                    <div class="welcome-card card">
+                        <div class="welcome-graphic">🎯</div>
+                        <h2>Candidate Profile Visualizer</h2>
+                        <p>Select a candidate from the directory list, or enter a specific candidate ID below to load their profile directly from the dataset.</p>
+                        
+                        <div class="direct-search-box">
+                            <input type="text" id="direct-id-input" placeholder="e.g. CAND_0000042">
+                            <button class="btn btn-primary" id="direct-id-btn">Load Profile</button>
+                        </div>
+                        
+                        <div class="quick-links">
+                            <p>Try searching these sample IDs:</p>
+                            <div class="quick-tags">
+                                <span class="quick-tag" onclick="loadDirectId('CAND_0000001')">CAND_0000001</span>
+                                <span class="quick-tag" onclick="loadDirectId('CAND_0000002')">CAND_0000002</span>
+                                <span class="quick-tag" onclick="loadDirectId('CAND_0000004')">CAND_0000004</span>
+                                <span class="quick-tag" onclick="loadDirectId('CAND_0000025')">CAND_0000025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
