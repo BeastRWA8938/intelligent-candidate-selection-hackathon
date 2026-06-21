@@ -283,6 +283,9 @@ async function loadProfile(id) {
 }
 
 function resetShowcase() {
+    // Deselect any highlighted active card in the sidebar directory list
+    document.querySelectorAll('.candidate-item-card').forEach(el => el.classList.remove('active'));
+    
     showcaseContainer.innerHTML = `
         <div class="welcome-card card">
             <div class="welcome-graphic">🎯</div>
@@ -456,9 +459,12 @@ function renderProfile(c) {
                         </div>
                     </div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <span class="badge badge-yoe">${prof.years_of_experience || '0'} Years Exp</span>
-                    <span class="badge badge-country">${prof.current_industry || 'Industry'}</span>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 12px;">
+                    <button class="btn btn-secondary" onclick="resetShowcase()">&larr; Back to Search</button>
+                    <div style="display: flex; gap: 8px;">
+                        <span class="badge badge-yoe">${prof.years_of_experience || '0'} Years Exp</span>
+                        <span class="badge badge-country">${prof.current_industry || 'Industry'}</span>
+                    </div>
                 </div>
             </div>
 
