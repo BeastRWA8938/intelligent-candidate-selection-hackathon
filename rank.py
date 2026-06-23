@@ -7,6 +7,7 @@ import argparse
 import csv
 import heapq
 import logging
+import hashlib
 from datetime import datetime
 
 # Configure structured logging
@@ -287,23 +288,35 @@ def calculate_meta_scores(c, weights, current_time):
     signals = c.get("redrob_signals", {})
     skills = c.get("skills", [])
     skill_names_set = {normalize_skill(s.get("name", "")) for s in skills if s.get("name")}
+    history = c.get("career_history", [])
     
-    # 1. Title Score (avoiding substring match bugs)
+    # 1. Title Score (Standardised Component-Based Scoring)
     title_score = 20.0
-    # Guard against hybrid recruiter/engineer titles
     if not is_disqualified_title(curr_title):
-        if any(gt in curr_title for gt in GOOD_TITLES):
-            title_score = 100.0
-        elif "engineer" in curr_title or "developer" in curr_title or "programmer" in curr_title or "architect" in curr_title:
-            title_score = 60.0
+        has_core_role = any(r in curr_title for r in ["engineer", "developer", "architect", "scientist", "programmer"])
+        role_weight = 1.0 if has_core_role else 0.3
+        
+        seniority_pts = 0
+        if any(s in curr_title for s in ["senior", "lead", "principal", "founding", "staff"]):
+            seniority_pts = 40
             
-    # 2. Concept Skill Score (using normalized soft match clusters)
+        domain_pts = 0
+        if any(d in curr_title for d in GOOD_TITLES) or any(d in curr_title for d in ["ai", "machine learning", "ml", "nlp", "search", "backend", "software"]):
+            domain_pts = 60
+            
+        raw_title_score = seniority_pts + domain_pts
+        if raw_title_score == 0:
+            raw_title_score = 20.0
+        title_score = role_weight * raw_title_score
+            
+    # 2. Concept Skill Score (using depth-weighted clusters & recency decay & fallback durations)
     matched_clusters = 0
-    skills_weighted = 0.0
     matched_skills = []
+    cluster_scores = {}
     
     for cluster_name, keywords in CONCEPT_CLUSTERS.items():
         overlap = skill_names_set.intersection(keywords)
+        max_s_score = 0.0
         if overlap:
             matched_clusters += 1
             for s in skills:
@@ -316,33 +329,63 @@ def calculate_meta_scores(c, weights, current_time):
                     prof_level = prof_level.lower().strip()
                     prof_mult = {"beginner": 0.5, "intermediate": 0.8, "advanced": 1.0, "expert": 1.2}.get(prof_level, 0.5)
                     
-                    dur = s.get("duration_months")
-                    if dur is None or not isinstance(dur, (int, float)):
-                        dur = 0.0
-                    dur = float(dur)
-                    
+                    # Endorsement Logarithmic Scaling
                     end = s.get("endorsements")
                     if end is None or not isinstance(end, (int, float)):
                         end = 0.0
                     end = float(end)
-                    end_mult = min(1.5, 1.0 + (end / 50.0))
+                    end_mult = 1.0 + 0.1 * math.log1p(end)
                     
-                    s_score = 10.0 * prof_mult * end_mult * (min(36.0, dur) / 12.0)
-                    skills_weighted += s_score
+                    # Duration with fallback to career description matches
+                    dur = s.get("duration_months")
+                    if dur is None or not isinstance(dur, (int, float)) or dur == 0.0:
+                        dur = 0.0
+                        for job in history:
+                            desc = job.get("description", "") or ""
+                            if s_name.lower() in desc.lower() or norm_s in desc.lower():
+                                job_dur = job.get("duration_months")
+                                if job_dur and isinstance(job_dur, (int, float)):
+                                    dur = max(dur, float(job_dur) * 0.5)
+                    else:
+                        dur = float(dur)
+                        
+                    # Recency Decay
+                    recency_mult = 1.0
+                    latest_end = None
+                    has_current_job_with_skill = False
+                    for job in history:
+                        desc = job.get("description", "") or ""
+                        if s_name.lower() in desc.lower() or norm_s in desc.lower():
+                            if job.get("is_current", False) or job.get("end_date") is None:
+                                has_current_job_with_skill = True
+                                break
+                            else:
+                                ed = job.get("end_date")
+                                ed_dt = parse_date(ed, current_time)
+                                if ed_dt:
+                                    if latest_end is None or ed_dt > latest_end:
+                                        latest_end = ed_dt
+                    if not has_current_job_with_skill and latest_end:
+                        months_elapsed = (current_time - latest_end).days / 30.4
+                        recency_mult = math.exp(-0.015 * months_elapsed)
+                        
+                    s_score = 10.0 * prof_mult * end_mult * (min(36.0, dur) / 12.0) * recency_mult
+                    if s_score > max_s_score:
+                        max_s_score = s_score
                     matched_skills.append(s_name)
-                    
+            cluster_scores[cluster_name] = max_s_score
+            
+    skills_weighted = sum(cluster_scores.values())
     cluster_mult = 0.4 + (matched_clusters * 0.15) # 1->0.55, 2->0.70, 3->0.85, 4->1.0
     concept_skill_score = min(100.0, skills_weighted * cluster_mult * 3.0)
     
-    # 3. Experience Score (5-9 years target)
+    # 3. Experience Score (Asymmetric Gaussian sweet spot centered at 7.0 YoE)
     if 5.0 <= yoe <= 9.0:
         yoe_score = 100.0
-    elif 4.0 <= yoe < 5.0 or 9.0 < yoe <= 11.0:
-        yoe_score = 80.0
-    elif 3.0 <= yoe < 4.0 or 11.0 < yoe <= 13.0:
-        yoe_score = 50.0
+    elif yoe < 5.0:
+        yoe_score = 100.0 * math.exp(-((yoe - 7.0) ** 2) / (2 * (1.5 ** 2)))
     else:
-        yoe_score = 10.0
+        yoe_score = max(75.0, 100.0 * math.exp(-((yoe - 7.0) ** 2) / (2 * (4.0 ** 2))))
         
     # 4. Pedigree Score
     edu_score = 50.0
@@ -356,20 +399,30 @@ def calculate_meta_scores(c, weights, current_time):
         elif tier == "tier_2":
             edu_score = max(edu_score, 80.0)
             
-    # 5. Location Score (fixing Jaipur relocation bug)
+    # 5. Location Score (Work Mode/Relocation Alignment)
     loc_score = 30.0
     is_pune_noida = "pune" in location or "noida" in location or "delhi ncr" in location or "ncr" in location
     is_tier1_india = any(city in location for city in ["hyderabad", "mumbai", "bangalore", "bengaluru", "chennai"])
+    willing_relocate = signals.get("willing_to_relocate", False)
+    pref_mode = str(signals.get("preferred_work_mode", "")).lower().strip()
     
-    if is_pune_noida:
-        loc_score = 100.0
-    elif is_tier1_india and signals.get("willing_to_relocate", False):
-        loc_score = 85.0
-    elif is_tier1_india:
-        loc_score = 60.0
-    elif signals.get("willing_to_relocate", False):
-        loc_score = 70.0 # Reward relocation willingness for non-tier1
-        
+    if pref_mode == "remote":
+        if is_pune_noida:
+            loc_score = 100.0
+        elif willing_relocate:
+            loc_score = 70.0
+        else:
+            loc_score = 30.0
+    else:
+        if is_pune_noida:
+            loc_score = 100.0
+        elif is_tier1_india and willing_relocate:
+            loc_score = 85.0
+        elif is_tier1_india:
+            loc_score = 60.0
+        elif willing_relocate:
+            loc_score = 70.0
+            
     return {
         "title": title_score,
         "concept_skill": concept_skill_score,
@@ -446,7 +499,7 @@ def get_behavioral_multiplier(signals, current_time):
 
 def generate_reasoning(c, yoe, matched_skills, is_pune_noida, notice, signals, rank=None):
     cid = c.get("candidate_id", "CAND_0000000")
-    seed = sum(ord(char) for char in cid)
+    seed = int(hashlib.sha256(cid.encode("utf-8")).hexdigest(), 16) % (2**32 - 1)
     
     prof = c.get("profile", {})
     current_title = prof.get("current_title", "Engineer")
@@ -618,12 +671,14 @@ def main():
     jd_tokens = [w for w in tokenize(jd_processed) if w not in stop_words]
     jd_tf = collections.Counter(jd_tokens)
     
-    # Pass 1: Stream candidates to compute Document Frequencies (DF)
+    # Pass 1: Stream candidates to compute Document Frequencies (DF) and Doc Lengths
     logger.info("Pass 1: Computing Document Frequencies and filtering anomalies...")
     df = collections.defaultdict(int)
     N = 0
     filtered_honeypot = 0
     filtered_disq = 0
+    total_doc_len = 0
+    doc_lens = {}
     
     p1_start = time.time()
     with open(args.candidates, "r", encoding="utf-8") as f:
@@ -631,6 +686,7 @@ def main():
             if idx > 0 and idx % 25000 == 0:
                 logger.info(f"  Processed {idx} profiles in Pass 1...")
             c = json.loads(line)
+            cid = c["candidate_id"]
             
             # Apply sieves early
             if is_honeypot(c, current_time):
@@ -652,6 +708,10 @@ def main():
             processed_text = preprocess_text(combined_text)
             tokens = [w for w in tokenize(processed_text) if w not in stop_words]
             
+            doc_len = len(tokens)
+            doc_lens[cid] = doc_len
+            total_doc_len += doc_len
+            
             for word in set(tokens):
                 df[word] += 1
                 
@@ -665,26 +725,22 @@ def main():
         logger.error("No qualified candidates left after screening!")
         return
 
-    # Compute IDF map
+    avg_doc_len = (total_doc_len / N) if N > 0 else 1.0
+
+    # Compute BM25 IDF map
     idf = {}
     for word, count in df.items():
-        idf[word] = math.log(1.0 + (N / (1.0 + count)))
-        
-    # Build JD TF-IDF vector
-    jd_vector = {}
-    jd_norm = 0.0
-    for word, tf_val in jd_tf.items():
-        if word in idf:
-            weight = tf_val * idf[word]
-            jd_vector[word] = weight
-            jd_norm += weight * weight
-    jd_norm = math.sqrt(jd_norm)
+        val = (N - count + 0.5) / (count + 0.5)
+        idf[word] = math.log(1.0 + max(0.0, val))
 
-    # Pass 2: Stream again to compute raw similarities and find max_sim
-    logger.info("Pass 2: Calculating TF-IDF similarities and finding max similarity...")
+    # Pass 2: Stream again to compute raw BM25 scores and find max_bm25
+    logger.info("Pass 2: Calculating BM25 similarities and finding max similarity...")
     p2_start = time.time()
     raw_sims = {}
     max_sim = 0.0
+    
+    k1 = 1.2
+    b = 0.75
     
     with open(args.candidates, "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
@@ -697,7 +753,7 @@ def main():
             if is_honeypot(c, current_time) or check_disqualifications(c)[0]:
                 continue
                 
-            # Tokenize and compute similarity
+            # Tokenize and compute BM25 score
             prof = c.get("profile", {})
             summary = prof.get("summary") or ""
             headline = prof.get("headline") or ""
@@ -709,28 +765,26 @@ def main():
             tokens = [w for w in tokenize(processed_text) if w not in stop_words]
             tf = collections.Counter(tokens)
             
-            dot_product = 0.0
-            doc_norm = 0.0
-            for word, tf_val in tf.items():
-                weight = tf_val * idf.get(word, 0.0)
-                doc_norm += weight * weight
-                if word in jd_vector:
-                    dot_product += weight * jd_vector[word]
-            doc_norm = math.sqrt(doc_norm)
+            doc_len = doc_lens.get(cid, len(tokens))
             
-            sim = 0.0
-            if doc_norm > 0.0 and jd_norm > 0.0:
-                sim = dot_product / (doc_norm * jd_norm)
+            bm25_score = 0.0
+            for word in jd_tf:
+                if word in tf and word in idf:
+                    f_val = tf[word]
+                    word_idf = idf[word]
+                    numerator = f_val * (k1 + 1.0)
+                    denominator = f_val + k1 * (1.0 - b + b * (doc_len / avg_doc_len))
+                    bm25_score += word_idf * (numerator / denominator)
+                    
+            raw_sims[cid] = bm25_score
+            if bm25_score > max_sim:
+                max_sim = bm25_score
                 
-            raw_sims[cid] = sim
-            if sim > max_sim:
-                max_sim = sim
-                
-    logger.info(f"Pass 2 complete in {time.time() - p2_start:.2f}s. Max Similarity: {max_sim:.4f}")
+    logger.info(f"Pass 2 complete in {time.time() - p2_start:.2f}s. Max BM25: {max_sim:.4f}")
     if max_sim == 0.0:
         max_sim = 1.0
 
-    # Default weights for composite scoring
+    # Default weights for composite scoring (tfidf score will represent BM25 relevance)
     weights = {
         "title": 0.20,
         "tfidf": 0.30,
@@ -757,7 +811,7 @@ def main():
                 continue
                 
             sim = raw_sims[cid]
-            tfidf_score = (sim / max_sim) * 100.0
+            tfidf_score = (sim / max_sim) * 100.0  # normalized BM25 score
             
             meta = calculate_meta_scores(c, weights, current_time)
             
