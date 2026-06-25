@@ -39,8 +39,9 @@ sandbox_link: "https://huggingface.co/spaces/Rushikesh/redrob-candidate-discover
 # candidate sample. See Section 10.5 of submission_spec.md for acceptable
 # platforms.
 
-reproduce_command: "python rank.py --candidates ./Hackathon-Details/candidates.jsonl --out ./team_redrob.csv"
-# The single command that produces team_redrob.csv from candidates.jsonl.
+reproduce_command: "python rank.py --candidates ./Hackathon-Details/candidates.jsonl --out ./team_meta_minds.csv"
+# The single command that produces team_meta_minds.csv from candidates.jsonl.
+
 # Should run end-to-end within 5 minutes on CPU with 16GB RAM and no network.
 
 # ============================================================================

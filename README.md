@@ -46,7 +46,7 @@ pip install -r requirements.txt
 The core ranking pipeline requires **zero external dependencies** and runs entirely on the Python Standard Library. To process the candidate profiles and output the final ranked CSV:
 
 ```bash
-python rank.py --candidates ./Hackathon-Details/candidates.jsonl --out ./team_redrob.csv
+python rank.py --candidates ./Hackathon-Details/candidates.jsonl --out ./team_meta_minds.csv
 ```
 *Note: This streams all 100,000 candidates in ~44 seconds using only ~16MB of active memory.*
 
@@ -54,8 +54,9 @@ python rank.py --candidates ./Hackathon-Details/candidates.jsonl --out ./team_re
 To verify that the output CSV meets the submission formatting rules:
 
 ```bash
-python Hackathon-Details/validate_submission.py team_redrob.csv
+python Hackathon-Details/validate_submission.py team_meta_minds.csv
 ```
+
 
 ### 3. Launch the Interactive Visualizer Dashboard
 Start the local HTTP visualizer server to search, filter, and inspect ranked candidates:
