@@ -5,17 +5,27 @@
 # ============================================================================
 # Team identity
 # ============================================================================
-team_name: "RedRob-Antigravity"  # Used in leaderboard and announcements
+team_name: "Meta Minds"  # Used in leaderboard and announcements
 
 primary_contact:
-  name: "Rushikesh"
-  email: "rushikesh@example.com"   # Used for all organizer communication
-  phone: "+91-9999999999"        # Used for top-50 / top-10 outreach
+  name: "Rushikesh Waghmode"
+  email: "rushikeshwaghmode688@gmail.com"   # Used for all organizer communication
+  phone: "+91-7620451904"        # Used for top-50 / top-10 outreach
 
 team_members:
-  - name: "Rushikesh"
-    email: "rushikesh@example.com"
-    role: "ML Engineer"          # Optional, e.g. "Team Lead", "Backend", "Data"
+  - name: "Rushikesh Waghmode"
+    email: "rushikeshwaghmode688@gmail.com"
+    role: "Team Lead / ML Engineer"
+  - name: "Sanketvardhan Bhonsle"
+    email: "sanketvardhanbhonsle1@gmail.com"
+    role: "ML Engineer"
+  - name: "Madhavi Chitnis"
+    email: "madhavichitnis5@gmail.com"
+    role: "Data Scientist"
+  - name: "Ruchit Shetty"
+    email: "ruchit.work01@gmail.com"
+    role: "Software Engineer"
+
 
 # ============================================================================
 # Code and reproducibility
