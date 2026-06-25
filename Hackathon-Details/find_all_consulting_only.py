@@ -1,4 +1,7 @@
+import os
 import json
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 CONSULTING_COMPANIES = {
     "tcs", "tata consultancy services", "infosys", "wipro", "accenture", 
@@ -10,7 +13,7 @@ def check_consulting():
     consulting_only_count = 0
     total = 0
     
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
             total += 1
             c = json.loads(line)

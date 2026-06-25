@@ -1,0 +1,6 @@
+# Core candidate ranking pipeline (rank.py) runs on Python Standard Library only (0 external dependencies required).
+# Below are requirements for the PPT presentation filler, local MCP servers, and utilities.
+
+python-pptx==1.0.2
+xlsxwriter==3.2.9
+mcp==1.28.0

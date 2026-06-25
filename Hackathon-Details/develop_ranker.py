@@ -1,5 +1,8 @@
+import os
 import json
 from datetime import datetime
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Define lists of consulting companies and valid/invalid titles
 CONSULTING_COMPANIES = {
@@ -255,7 +258,7 @@ def test_ranking():
     current_time = datetime(2026, 6, 18)
     scored_candidates = []
     
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
             c = json.loads(line)
             score, reason = score_candidate(c, current_time)

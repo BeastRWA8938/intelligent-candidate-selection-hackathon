@@ -1,5 +1,8 @@
+import os
 import json
 from pathlib import Path
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def extract_and_save_reports():
     subagents = {
@@ -10,8 +13,8 @@ def extract_and_save_reports():
         "investor_judge": "1943d358-1b0a-4167-9865-ccbbfd081c48"
     }
     
-    app_data_dir = Path("C:/Users/Rushikesh/.gemini/antigravity-cli/brain")
-    artifacts_dir = Path("C:/Users/Rushikesh/.gemini/antigravity-cli/brain/8e0c4dda-3621-4367-bc8a-b25854147947")
+    app_data_dir = Path.home() / ".gemini" / "antigravity-cli" / "brain"
+    artifacts_dir = Path.home() / ".gemini" / "antigravity-cli" / "brain" / "8e0c4dda-3621-4367-bc8a-b25854147947"
     
     for name, cid in subagents.items():
         log_path = app_data_dir / cid / ".system_generated" / "logs" / "transcript_full.jsonl"

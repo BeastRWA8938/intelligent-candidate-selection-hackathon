@@ -1,5 +1,8 @@
+import os
 import json
 from pathlib import Path
+
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 def read_logs():
     subagents = {
@@ -10,7 +13,7 @@ def read_logs():
         "investor_judge": "1943d358-1b0a-4167-9865-ccbbfd081c48"
     }
     
-    app_data_dir = Path("C:/Users/Rushikesh/.gemini/antigravity-cli/brain")
+    app_data_dir = Path.home() / ".gemini" / "antigravity-cli" / "brain"
     
     for name, cid in subagents.items():
         log_path = app_data_dir / cid / ".system_generated" / "logs" / "transcript.jsonl"

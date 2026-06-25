@@ -1,5 +1,8 @@
+import os
 import json
 from datetime import datetime
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def scan_full():
     anomalous_yoe = []
@@ -10,7 +13,7 @@ def scan_full():
     
     current_time = datetime(2026, 6, 18)
     
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
             total += 1
             c = json.loads(line)

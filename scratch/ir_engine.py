@@ -1,9 +1,12 @@
+import os
 import json
 import time
 import math
 import collections
 import re
 from datetime import datetime
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def get_stop_words():
     """Returns a set of standard English stop words used for IR tokenization."""
@@ -328,4 +331,4 @@ def test_ir_engine(candidates_path, max_candidates=10000):
 
 if __name__ == "__main__":
     # Test on the candidate dataset
-    test_ir_engine("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", max_candidates=10000)
+    test_ir_engine(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), max_candidates=10000)

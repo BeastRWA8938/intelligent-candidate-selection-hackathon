@@ -1,6 +1,9 @@
+import os
 import json
 import re
 from datetime import datetime
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def scan_candidates():
     # We will search for:
@@ -13,7 +16,7 @@ def scan_candidates():
     count = 0
     honeypots = []
     
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
             c = json.loads(line)
             cid = c["candidate_id"]

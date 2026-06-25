@@ -1,5 +1,8 @@
+import os
 import json
 import re
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def search():
     expert_zero_count = 0
@@ -7,7 +10,7 @@ def search():
     word_founded_candidates = []
     digits_in_company = []
     
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
             c = json.loads(line)
             cid = c["candidate_id"]

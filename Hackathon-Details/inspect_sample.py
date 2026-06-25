@@ -1,8 +1,11 @@
+import os
 import json
 from datetime import datetime
 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 def inspect_sample_candidates():
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/sample_candidates.json", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "sample_candidates.json"), "r", encoding="utf-8") as f:
         candidates = json.load(f)
         
     print(f"Loaded {len(candidates)} sample candidates.")

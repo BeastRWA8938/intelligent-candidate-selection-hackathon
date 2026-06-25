@@ -1,6 +1,9 @@
+import os
 import zipfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def get_docx_text(path):
     try:
@@ -21,7 +24,7 @@ def get_docx_text(path):
         return f"Error extracting {path}: {e}"
 
 def main():
-    details_dir = Path("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details")
+    details_dir = Path(os.path.join(PROJECT_ROOT, "Hackathon-Details"))
     for docx_path in details_dir.glob("*.docx"):
         txt_path = docx_path.with_suffix(".txt")
         print(f"Extracting {docx_path.name} to {txt_path.name}...")

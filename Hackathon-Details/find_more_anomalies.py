@@ -1,5 +1,8 @@
+import os
 import json
 from datetime import datetime
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def search_more_anomalies():
     current_time = datetime(2026, 6, 18)
@@ -9,7 +12,7 @@ def search_more_anomalies():
     multiple_current_jobs = 0
     job_date_overlap_anomaly = 0
     
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
             c = json.loads(line)
             cid = c["candidate_id"]

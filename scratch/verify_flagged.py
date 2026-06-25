@@ -1,7 +1,10 @@
+import os
 import json
 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 def verify():
-    file_path = "C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/scratch/flagged_candidates.json"
+    file_path = os.path.join(PROJECT_ROOT, "scratch", "flagged_candidates.json")
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
         

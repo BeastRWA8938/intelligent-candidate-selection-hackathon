@@ -1,12 +1,15 @@
+import os
 import json
 import re
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def inspect_details():
     # Let's read first 5000 candidates and search for the word "founded" (case insensitive)
     # and print some examples.
     print("Searching for 'founded' in first 5000 candidates...")
     found_count = 0
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
             if idx >= 5000:
                 break
@@ -29,7 +32,7 @@ def inspect_details():
                 break
                 
     # Also let's inspect the skills list of the first candidate
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         c = json.loads(f.readline())
         print("\nFirst candidate skills sample:")
         print(json.dumps(c["skills"][:5], indent=2))

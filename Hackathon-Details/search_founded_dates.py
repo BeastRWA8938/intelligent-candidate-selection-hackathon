@@ -1,12 +1,15 @@
+import os
 import json
 import re
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def search_years():
     matches = []
     # Match any 4 digit number that could be a year in descriptions
     year_pat = re.compile(r"\b(19\d{2}|20\d{2})\b")
     
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
             c = json.loads(line)
             cid = c["candidate_id"]

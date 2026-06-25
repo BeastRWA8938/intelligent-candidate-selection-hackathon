@@ -1,12 +1,15 @@
+import os
 import json
 import re
 from datetime import datetime
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def check_founding():
     current_time = datetime(2026, 6, 18)
     founding_honeypots = set()
     
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
             c = json.loads(line)
             cid = c["candidate_id"]
@@ -40,7 +43,7 @@ def check_founding():
                 founding_honeypots.add(cid)
                 
     # Load previously flagged honeypots
-    file_path = "C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/scratch/flagged_candidates.json"
+    file_path = os.path.join(PROJECT_ROOT, "scratch", "flagged_candidates.json")
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     existing_honeypots = set(data["honeypot"])

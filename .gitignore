@@ -61,3 +61,15 @@ Thumbs.db
 # Hackathon Large Datasets
 Hackathon-Details/*.jsonl
 Hackathon-Details/*.jsonl.gz
+
+# PPT
+PPT/*
+
+# Local MCP config
+mcp-config.json
+
+# Local run outputs
+submission.csv
+submission.xlsx
+scratch/flagged_candidates.json
+

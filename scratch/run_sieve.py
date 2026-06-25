@@ -7,8 +7,10 @@ from datetime import datetime
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import sieve
 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 def main():
-    candidates_file = "C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl"
+    candidates_file = os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl")
     
     scanned_count = 0
     honeypot_count = 0
@@ -98,7 +100,7 @@ def main():
         print(f"  - {key}: {val} candidates")
         
     # Write flagged candidate IDs to a JSON file in the scratch folder
-    out_file = "C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/scratch/flagged_candidates.json"
+    out_file = os.path.join(PROJECT_ROOT, "scratch", "flagged_candidates.json")
     with open(out_file, "w", encoding="utf-8") as out_f:
         json.dump(flagged_ids, out_f, indent=2)
         

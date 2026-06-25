@@ -1,5 +1,8 @@
+import os
 import json
 from datetime import datetime
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def refine_scan():
     current_time = datetime(2026, 6, 18)
@@ -14,7 +17,7 @@ def refine_scan():
     expert_zero_5 = 0
     
     # Let's count how many candidates trigger each threshold
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
             c = json.loads(line)
             yoe = c["profile"]["years_of_experience"]

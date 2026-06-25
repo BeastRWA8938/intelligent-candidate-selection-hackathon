@@ -1,5 +1,8 @@
+import os
 import json
 import re
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def check_data():
     company_descriptions = {}
@@ -10,7 +13,7 @@ def check_data():
     # The file candidates.jsonl is 487MB, which has 100,000 lines. Let's process the whole file, it should take ~10-15 seconds in Python.
     print("Scanning candidates.jsonl...")
     
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
             total_candidates += 1
             c = json.loads(line)

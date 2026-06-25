@@ -1,11 +1,14 @@
+import os
 import json
 import gzip
 from datetime import datetime
 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 def inspect():
     # Load first 1000 candidates from candidates.jsonl to inspect distribution and find patterns
     candidates = []
-    with open("C:/Users/Rushikesh/Desktop/Data/Hackathon/Hack2Skill-RedRob/Hackathon-Details/candidates.jsonl", "r", encoding="utf-8") as f:
+    with open(os.path.join(PROJECT_ROOT, "Hackathon-Details", "candidates.jsonl"), "r", encoding="utf-8") as f:
         for i, line in enumerate(f):
             if i >= 1000:
                 break
