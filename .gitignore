@@ -78,4 +78,19 @@ scratch/flagged_candidates.json
 !README.md
 !readme.md
 
+# Scratch directory
+scratch/
+
+# Local audit and agent utility scripts
+read_judge_logs.py
+read_subagent_logs.py
+
+# Duplicate submission outputs
+team_redrob_v2.csv
+
+# Ignore exploratory python scripts in Hackathon-Details except the official validator
+Hackathon-Details/*.py
+!Hackathon-Details/validate_submission.py
+
+
 
