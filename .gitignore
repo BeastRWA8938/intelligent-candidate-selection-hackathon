@@ -72,4 +72,10 @@ mcp-config.json
 submission.csv
 submission.xlsx
 scratch/flagged_candidates.json
+
+# Ignore all markdown files except README.md
+*.md
+!README.md
+!readme.md
+
 
